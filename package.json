@@ -20,10 +20,10 @@
     "chai": "^3.5.0",
     "istanbul": "^0.4.5",
     "mocha": "^2.5.3",
-    "mongoose": "^4.13.9"
+    "mongoose": "^5.2.7"
   },
   "scripts": {
-    "test": "istanbul cover --report lcov  _mocha tests --recursive"
+    "test": "istanbul cover --report lcov  node_modules/mocha/bin/_mocha tests --recursive "
   },
   "contributors": [
     {

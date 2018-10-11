@@ -46,9 +46,9 @@ const saveDiffObject = (currentObject, original, updated, opts, metaData) => {
 
 const saveDiffHistory = (queryObject, currentObject, opts) => {
     // const updateParams = queryObject._update['$set'] || queryObject._update;
-    queryObject._update['updatedAt'] = queryObject._update.$set['updatedAt']
-    delete queryObject._update["$set"]
-    delete queryObject._update["$setOnInsert"]
+    queryObject._update["updatedAt"] = queryObject._update.$set["updatedAt"];
+    delete queryObject._update["$set"];
+    delete queryObject._update["$setOnInsert"];
     const updateParams = queryObject._update;
     const dbObject = pick(currentObject, Object.keys(updateParams));
 
@@ -168,7 +168,7 @@ const getHistories = (modelName, id, expandableFields, cb) => {
  */
 const plugin = function lastModifiedPlugin(schema, opts = {}) {
     if (opts.uri) {
-        mongoose.connect(opts.uri, { useMongoClient: true }).catch(e => {
+        mongoose.connect(opts.uri).catch(e => {
             console.error('mongoose-diff-history connection error:', e);
         });
     }

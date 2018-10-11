@@ -5,12 +5,11 @@ const mongoose = require('mongoose');
 const diffPatch = require('jsondiffpatch').create();
 
 const diffHistory = require('../diffHistory');
-const History = require('../diffHistoryModel').model;
+
+const historySchema = require('../diffHistoryModel').schema;
 
 mongoose.Promise = Promise;
-mongoose.connect('mongodb://localhost:27017/tekpub_test', {
-    useMongoClient: true
-});
+mongoose.connect('mongodb://localhost:27017/tekpub_test');
 
 const sampleSchema1 = new mongoose.Schema({
     abc: { type: Date, default: Date.now() },
@@ -19,6 +18,7 @@ const sampleSchema1 = new mongoose.Schema({
     ignored: String
 });
 sampleSchema1.plugin(diffHistory.plugin, { omit: ['ignored'] });
+var History = mongoose.model('History', historySchema);
 const Sample1 = mongoose.model('samples', sampleSchema1);
 
 describe('diffHistory', function () {
@@ -32,6 +32,7 @@ describe('diffHistory', function () {
     });
 
     describe('plugin: getVersion', function () {
+        this.timeout(5000);
         let sample1, sampleV1, sampleV2, sampleV3, sampleV4;
         beforeEach(function (done) {
             sample1 = new Sample1({ def: 'ipsum', ghi: 123 });
@@ -147,6 +148,7 @@ describe('diffHistory', function () {
     });
 
     describe('opt: omit', function () {
+        this.timeout(5000);
         let sample1, sampleV0, sampleV1, sampleV2;
         const ignoredFinal = 'i2';
         beforeEach(function (done) {
@@ -210,6 +212,7 @@ describe('diffHistory', function () {
     });
 
     describe('plugin: pre save', function () {
+        this.timeout(5000);
         let sample1, firstSample;
         beforeEach(function (done) {
             sample1 = new Sample1({ def: 'ipsum', ghi: 123 });
