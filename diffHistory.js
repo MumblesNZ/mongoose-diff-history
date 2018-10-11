@@ -6,8 +6,8 @@ const mongoose = require('mongoose');
 const objectHash = (obj, idx) => obj._id || obj.id || `$$index: ${idx}`;
 const diffPatcher = require('jsondiffpatch').create({ objectHash });
 
-const History = require('./diffHistoryModel').model;
-
+const historySchema = require('./diffHistoryModel').schema;
+var History;
 const isValidCb = cb => {
     return cb && typeof cb === 'function';
 };
@@ -45,7 +45,11 @@ const saveDiffObject = (currentObject, original, updated, opts, metaData) => {
 };
 
 const saveDiffHistory = (queryObject, currentObject, opts) => {
-    const updateParams = queryObject._update['$set'] || queryObject._update;
+    // const updateParams = queryObject._update['$set'] || queryObject._update;
+    queryObject._update['updatedAt'] = queryObject._update.$set['updatedAt']
+    delete queryObject._update["$set"]
+    delete queryObject._update["$setOnInsert"]
+    const updateParams = queryObject._update;
     const dbObject = pick(currentObject, Object.keys(updateParams));
 
     return saveDiffObject(currentObject, dbObject, updateParams, opts, queryObject.options);
@@ -176,6 +180,12 @@ const plugin = function lastModifiedPlugin(schema, opts = {}) {
             const errMsg = `opts.omit expects string or array, instead got '${typeof opts.omit}'`;
             throw new TypeError(errMsg);
         }
+    }
+
+    if (opts.mongooseConnection) {
+        History = opts.mongooseConnection.model('History', historySchema);
+    } else {
+        History = mongoose.model('History', historySchema);
     }
 
     schema.pre('save', function (next) {
