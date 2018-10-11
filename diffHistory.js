@@ -6,8 +6,8 @@ const mongoose = require('mongoose');
 const objectHash = (obj, idx) => obj._id || obj.id || `$$index: ${idx}`;
 const diffPatcher = require('jsondiffpatch').create({ objectHash });
 
-const History = require('./diffHistoryModel').model;
-
+const historySchema = require('./diffHistoryModel').schema;
+var History;
 const isValidCb = cb => {
     return cb && typeof cb === 'function';
 };
@@ -180,6 +180,12 @@ const plugin = function lastModifiedPlugin(schema, opts = {}) {
             const errMsg = `opts.omit expects string or array, instead got '${typeof opts.omit}'`;
             throw new TypeError(errMsg);
         }
+    }
+
+    if (opts.mongooseConnection) {
+        History = opts.mongooseConnection.model('History', historySchema);
+    } else {
+        History = mongoose.model('History', historySchema);
     }
 
     schema.pre('save', function (next) {

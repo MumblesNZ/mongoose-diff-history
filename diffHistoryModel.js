@@ -14,5 +14,5 @@ const historySchema = new Schema(
         timestamps: true
     }
 );
-
-module.exports = { model: mongoose.model('History', historySchema) };
+module.exports = { schema: historySchema };
+// module.exports = { model: mongoose.model('History', historySchema) };
